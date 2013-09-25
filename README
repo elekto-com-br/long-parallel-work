@@ -1,0 +1,3 @@
+﻿LongParallelWork é uma classe .Net para loops paralelos de longa duração que dá notificações sobre o progresso da tarefa em intervalos regulares de tempo.
+
+O projeto contém a classe e um exemplo de uso que mede o fator de paralelismo em função do número de CPUs lógicas usadas no loop paralelo, para uma tarefa intensiva em consumo de CPU.
