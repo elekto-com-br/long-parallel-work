@@ -40,7 +40,7 @@ namespace Elekto.Threading.Tasks
 
             Console.WriteLine();
             string lightDiagnostic = Run(25, 20000);
-            if (string.IsNullOrWhiteSpace(hardDiagnostic))
+            if (string.IsNullOrWhiteSpace(lightDiagnostic))
             {
                 Console.WriteLine("Bye!");
                 return;
