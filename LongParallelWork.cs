@@ -116,8 +116,18 @@ namespace Elekto.Threading.Tasks
                     double factor = idealBatchTimeSeconds/sw.Elapsed.TotalSeconds;
                     factor = Math.Min(1000, factor);
                     factor = Math.Max(0.001, factor);
+                    int previousBatchSyze = currentBatchSize;
                     currentBatchSize = (int) (currentBatchSize*factor);
-                    if (messageFunction != null)
+                    if (currentBatchSize > totalWork - index)
+                    {
+                        // Para que o lote não seja maior que trabalho restante
+                        currentBatchSize = totalWork - index;
+                    }
+
+                    // Para arredondar o tamanho de lote em múltiplos do tamanho inicial
+                    currentBatchSize = (currentBatchSize/initialBatchSize+1)*initialBatchSize;
+
+                    if ((messageFunction != null) && (previousBatchSyze != currentBatchSize))
                     {
                         messageFunction(string.Format("Tamanho do batch ajustado para {0:N0}.", currentBatchSize));
                     }
