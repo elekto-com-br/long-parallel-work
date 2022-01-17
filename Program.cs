@@ -65,11 +65,17 @@ namespace Elekto.Threading.Tasks
             }
             catch (Exception)
             {
-                Clipboard.SetText(all);
-                Console.WriteLine("Resultados no *Clipboard*. Envie, por favor, para negri@elekto.com.br");
+                try
+                {
+                    Clipboard.SetText(all);
+                    Console.WriteLine("Resultados no *Clipboard*. Envie, por favor, para negri@elekto.com.br");
+                }
+                catch
+                {
+                    Console.WriteLine("Não foi possível copiar os resultados para o clippboard. Por favor execute a partir de um diretório em que você tenha permissões de escrita.");
+                }
             }
 
-            Clipboard.SetText(all);
             Console.WriteLine("Obrigado por seu tempo!");
 
             Console.Write("[Enter] para encerrar.");
