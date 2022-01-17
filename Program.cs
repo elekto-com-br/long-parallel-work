@@ -16,7 +16,7 @@ namespace Elekto.Threading.Tasks
         [STAThread]
         private static void Main(string[] args)
         {
-            Stopwatch sw = Stopwatch.StartNew();
+            var sw = Stopwatch.StartNew();
 
             Console.WriteLine("Iniciando medição de escalabilidade da tarefa.");
             Console.WriteLine("[Esc] para abortar sutilmente.");
@@ -24,11 +24,11 @@ namespace Elekto.Threading.Tasks
 
             Console.WriteLine();
             Console.WriteLine("Coletando informações da máquina...");
-            string machineInfo = GetMachineInfo();
+            var machineInfo = GetMachineInfo();
             Console.WriteLine(machineInfo);
 
             Console.WriteLine();
-            string hardDiagnostic = Run(100, 1000);
+            var hardDiagnostic = Run(100, 1000);
             if (string.IsNullOrWhiteSpace(hardDiagnostic))
             {
                 Console.WriteLine("Bye!");
@@ -39,7 +39,7 @@ namespace Elekto.Threading.Tasks
             Console.WriteLine(hardDiagnostic);
 
             Console.WriteLine();
-            string lightDiagnostic = Run(25, 20000);
+            var lightDiagnostic = Run(25, 20000);
             if (string.IsNullOrWhiteSpace(lightDiagnostic))
             {
                 Console.WriteLine("Bye!");
@@ -52,13 +52,13 @@ namespace Elekto.Threading.Tasks
             Console.WriteLine();
             Console.WriteLine("Tudo feito em {0:N0}s.\r\n", sw.Elapsed.TotalSeconds);
 
-            string all = "Envie o seguinte para negri@elekto.com.br, por favor:\r\nMaquina:\r\n" + machineInfo +
-                         "\r\nTeste pesado:\r\n" + hardDiagnostic + "\r\nTeste leve\r\n" + lightDiagnostic;
+            var all = "Envie o seguinte para negri@elekto.com.br, por favor:\r\nMaquina:\r\n" + machineInfo +
+                      "\r\nTeste pesado:\r\n" + hardDiagnostic + "\r\nTeste leve\r\n" + lightDiagnostic;
 
             try
             {
-                string fileName = Path.Combine(Environment.CurrentDirectory,
-                    string.Format("Test.ParallelWork.{0:yyyyMMdd.HHmm}.txt", DateTime.UtcNow));
+                var fileName = Path.Combine(Environment.CurrentDirectory,
+                    $"Test.ParallelWork.{DateTime.UtcNow:yyyyMMdd.HHmm}.txt");
                 File.WriteAllText(fileName, all, Encoding.UTF8);
                 Console.WriteLine("Arquivo de resultados salvo em '{0}'.\r\n", fileName);
                 Console.WriteLine("Envie o arquivo, por favor, para negri@elekto.com.br");
@@ -80,22 +80,22 @@ namespace Elekto.Threading.Tasks
         private static string Run(int piDigits, int numberOfRepetitions)
         {
             var executionTimesHard = new List<RunResult>();
-            for (int i = 0; i < 5; ++i)
+            for (var i = 0; i < 5; ++i)
             {
                 Console.WriteLine();
                 Console.WriteLine("Iniciando para {0} digitos de Pi, {1} de 5...", piDigits, i + 1);
-                for (int paralleFactor = 0; paralleFactor <= Environment.ProcessorCount*1.5; ++paralleFactor)
+                for (var parallelFactor = 0; parallelFactor <= Environment.ProcessorCount*1.5; ++parallelFactor)
                 {
-                    LongParallelWork.WorkResult workDone = RunPiTask(paralleFactor, piDigits, numberOfRepetitions);
+                    var workDone = RunPiTask(parallelFactor, piDigits, numberOfRepetitions);
                     if (workDone.Aborted)
                     {
                         return string.Empty;
                     }
-                    executionTimesHard.Add(new RunResult(paralleFactor, workDone.TimeTaken.TotalSeconds));
+                    executionTimesHard.Add(new RunResult(parallelFactor, workDone.TimeTaken.TotalSeconds));
                     Console.WriteLine();
                 }
             }
-            List<RunResult> averaged = GetAverage(executionTimesHard).ToList();
+            var averaged = GetAverage(executionTimesHard).ToList();
             return GetDiagnostic(averaged);
         }
 
@@ -107,7 +107,7 @@ namespace Elekto.Threading.Tasks
             // Tamanho (inicial) de cada batch
             const int batchSize = 10;
 
-            LongParallelWork.WorkResult workDone = LongParallelWork.DoWork(
+            var workDone = LongParallelWork.DoWork(
                 i => PiCalculation.GetPi(piDigits), numberOfRepetitions, parallelFactor, batchTime, batchSize,
                 (i, ts) =>
                 {
@@ -115,7 +115,7 @@ namespace Elekto.Threading.Tasks
                         ts.TotalSeconds);
                     if (Console.KeyAvailable)
                     {
-                        ConsoleKeyInfo ck = Console.ReadKey(true);
+                        var ck = Console.ReadKey(true);
                         return ck.Key != ConsoleKey.Escape;
                     }
                     return true;
@@ -130,9 +130,10 @@ namespace Elekto.Threading.Tasks
         /// </summary>
         private static string GetDiagnostic(IEnumerable<RunResult> averaged)
         {
-            RunResult auto = averaged.First();
-            RunResult one = averaged.Skip(1).First();
-            IEnumerable<RunResult> others = averaged.Skip(2);
+            var runResults = averaged as RunResult[] ?? averaged.ToArray();
+            var auto = runResults.First();
+            var one = runResults.Skip(1).First();
+            var others = runResults.Skip(2);
 
             var sb = new StringBuilder(" Paralelismo; Tempo (s); Ideal (s); Fator;     Erro Acc\r\n");
             sb.AppendFormat("Auto        ;{0};          ;      ;             \r\n",
@@ -140,13 +141,13 @@ namespace Elekto.Threading.Tasks
             sb.AppendFormat("           1;{0};          ;      ;             \r\n",
                 one.TimeSeconds.ToString("N1").PadLeft(10));
 
-            double accError = 0.0;
-            foreach (RunResult run in others)
+            var accError = 0.0;
+            foreach (var run in others)
             {
                 double idealFactor = run.CpuCount;
-                double idealTime = one.TimeSeconds/idealFactor;
-                double realFactor = one.TimeSeconds/run.TimeSeconds;
-                double squaredError = (realFactor - idealFactor)*(realFactor - idealFactor);
+                var idealTime = one.TimeSeconds/idealFactor;
+                var realFactor = one.TimeSeconds/run.TimeSeconds;
+                var squaredError = (realFactor - idealFactor)*(realFactor - idealFactor);
                 accError += squaredError;
 
                 sb.AppendFormat("{0};{1};{2};{3};{4}\r\n",
@@ -185,7 +186,7 @@ namespace Elekto.Threading.Tasks
                 sb.AppendLine("Number of logical CPU's: ;" + Environment.ProcessorCount);
 
                 sb.AppendLine("                  Relação;            Máscara; Flags");
-                foreach (Machine.ProcessorInfo pi in Machine.GetProcessorsInfo())
+                foreach (var pi in Machine.GetProcessorsInfo())
                 {
                     sb.AppendFormat("{0}; {1}b; 0x{2}\r\n", pi.Relationship.ToString().PadLeft(25),
                         Convert.ToString(pi.ProcessorMask, 2).PadLeft(16, '0').Insert(8, "."),
@@ -214,8 +215,8 @@ namespace Elekto.Threading.Tasks
                 TimeSeconds = timeSeconds;
             }
 
-            public int CpuCount { get; private set; }
-            public double TimeSeconds { get; private set; }
+            public int CpuCount { get; }
+            public double TimeSeconds { get; }
         }
     }
 }

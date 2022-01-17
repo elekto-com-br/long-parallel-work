@@ -32,16 +32,16 @@ namespace Elekto.Mathematic
         /// </summary>
         private static int InvMod(int x, int y)
         {
-            int u = x;
-            int v = y;
-            int c = 1;
-            int a = 0;
+            var u = x;
+            var v = y;
+            var c = 1;
+            var a = 0;
 
             do
             {
-                int q = v/u;
+                var q = v/u;
 
-                int t = c;
+                var t = c;
                 c = a - q*c;
                 a = t;
 
@@ -66,8 +66,8 @@ namespace Elekto.Mathematic
         /// </summary>
         private static int PowMod(int a, int b, int m)
         {
-            int r = 1;
-            int aa = a;
+            var r = 1;
+            var aa = a;
 
             while (true)
             {
@@ -101,7 +101,7 @@ namespace Elekto.Mathematic
 
             var r = (int) Math.Sqrt(n);
 
-            for (int i = 3; i <= r; i += 2)
+            for (var i = 3; i <= r; i += 2)
             {
                 if ((n%i) == 0)
                 {
@@ -131,26 +131,26 @@ namespace Elekto.Mathematic
 
             double sum = 0;
 
-            for (int a = 3; a <= (2*nn); a = NextPrime(a))
+            for (var a = 3; a <= (2*nn); a = NextPrime(a))
             {
                 var vmax = (int) (Math.Log(2*nn)/Math.Log(a));
 
-                int av = 1;
+                var av = 1;
 
-                for (int i = 0; i < vmax; i++)
+                for (var i = 0; i < vmax; i++)
                 {
                     av = av*a;
                 }
 
-                int s = 0;
-                int num = 1;
-                int den = 1;
-                int v = 0;
-                int kq = 1;
-                int kq2 = 1;
+                var s = 0;
+                var num = 1;
+                var den = 1;
+                var v = 0;
+                var kq = 1;
+                var kq2 = 1;
 
                 int t;
-                for (int k = 1; k <= nn; k++)
+                for (var k = 1; k <= nn; k++)
                 {
                     t = k;
 
@@ -190,7 +190,7 @@ namespace Elekto.Mathematic
                         t = MulMod(t, num, av);
                         t = MulMod(t, k, av);
 
-                        for (int i = v; i < vmax; i++)
+                        for (var i = v; i < vmax; i++)
                         {
                             t = MulMod(t, a, av);
                         }
@@ -211,7 +211,7 @@ namespace Elekto.Mathematic
 
             var result = (int) (sum*1e9);
 
-            string stringResult = String.Format("{0:D9}", result);
+            var stringResult = string.Format("{0:D9}", result);
 
             return stringResult;
         }
@@ -229,10 +229,10 @@ namespace Elekto.Mathematic
             }
 
             var result = new StringBuilder("3.", 1024);
-            for (int i = 0; i < digits; i += 9)
+            for (var i = 0; i < digits; i += 9)
             {
-                String ds = CalculateNinePiDigits(i + 1);
-                int digitCount = Math.Min(digits - i, 9);
+                var ds = CalculateNinePiDigits(i + 1);
+                var digitCount = Math.Min(digits - i, 9);
 
                 while (ds.Length < 9)
                 {

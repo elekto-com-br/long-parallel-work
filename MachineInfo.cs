@@ -43,7 +43,7 @@ namespace Elekto.Diagnostics
                 // on a 32-bit Windows as well.
                 try
                 {
-                    string sArchitecture = Environment.GetEnvironmentVariable(
+                    var sArchitecture = Environment.GetEnvironmentVariable(
                         "PROCESSOR_ARCHITECTURE", EnvironmentVariableTarget.Machine);
                     if (sArchitecture == null)
                     {
@@ -89,7 +89,7 @@ namespace Elekto.Diagnostics
             // This call should fail with error ERROR_INSUFFICIENT_BUFFER.
             uint iReturnLength = 0;
             SystemLogicalProcessorInformatioNx86[] oDummy = null;
-            bool bResult = GetLogicalProcessorInformation(oDummy,
+            var bResult = GetLogicalProcessorInformation(oDummy,
                 ref iReturnLength);
             if (bResult)
             {
@@ -98,7 +98,7 @@ namespace Elekto.Diagnostics
 
             // Making sure that the error code that we got back isn't that 
             // there is insufficient space in the buffer.
-            int iError = Marshal.GetLastWin32Error();
+            var iError = Marshal.GetLastWin32Error();
             if (iError != ErrorInsufficientBuffer)
             {
                 throw Fail(
@@ -111,10 +111,10 @@ namespace Elekto.Diagnostics
             // GetLogicalProcessorInformation again.
             var iBaseSize = (uint) Marshal.SizeOf(
                 typeof (SystemLogicalProcessorInformatioNx86));
-            uint iNumberOfElements = iReturnLength/iBaseSize;
+            var iNumberOfElements = iReturnLength/iBaseSize;
             var oData =
                 new SystemLogicalProcessorInformatioNx86[iNumberOfElements];
-            uint iAllocatedSize = iNumberOfElements*iBaseSize;
+            var iAllocatedSize = iNumberOfElements*iBaseSize;
             if (!GetLogicalProcessorInformation(oData, ref iAllocatedSize))
             {
                 throw Fail(
@@ -135,7 +135,7 @@ namespace Elekto.Diagnostics
             // This call should fail with error ERROR_INSUFFICIENT_BUFFER.
             uint iReturnLength = 0;
             SystemLogicalProcessorInformatioNx64[] oDummy = null;
-            bool bResult = GetLogicalProcessorInformation(oDummy,
+            var bResult = GetLogicalProcessorInformation(oDummy,
                 ref iReturnLength);
             if (bResult)
             {
@@ -144,7 +144,7 @@ namespace Elekto.Diagnostics
 
             // Making sure that the error code that we got back is not  
             // that there is in sufficient space in the buffer.
-            int iError = Marshal.GetLastWin32Error();
+            var iError = Marshal.GetLastWin32Error();
             if (iError != ErrorInsufficientBuffer)
             {
                 throw Fail(
@@ -157,10 +157,10 @@ namespace Elekto.Diagnostics
             // GetLogicalProcessorInformation again.
             var iBaseSize = (uint) Marshal.SizeOf(
                 typeof (SystemLogicalProcessorInformatioNx64));
-            uint iNumberOfElements = iReturnLength/iBaseSize;
+            var iNumberOfElements = iReturnLength/iBaseSize;
             var oData =
                 new SystemLogicalProcessorInformatioNx64[iNumberOfElements];
-            uint iAllocatedSize = iNumberOfElements*iBaseSize;
+            var iAllocatedSize = iNumberOfElements*iBaseSize;
             if (!GetLogicalProcessorInformation(oData, ref iAllocatedSize))
             {
                 throw Fail("GetLogicalProcessorInformation failed",
@@ -193,7 +193,7 @@ namespace Elekto.Diagnostics
         {
             if (!Is64BitProcess)
             {
-                Version oVersion = Environment.OSVersion.Version;
+                var oVersion = Environment.OSVersion.Version;
                 if (oVersion < new Version(5, 1, 2600))
                 {
                     throw new NotSupportedException(
@@ -213,7 +213,7 @@ namespace Elekto.Diagnostics
             }
 
             // Getting a list of processor information
-            List<ProcessorInfo> oList = Is64BitProcess ? GetProcessorInfo64() : GetProcessorInfo86();
+            var oList = Is64BitProcess ? GetProcessorInfo64() : GetProcessorInfo86();
 
             return oList;
         }
@@ -221,7 +221,7 @@ namespace Elekto.Diagnostics
         public static int GetPhysicalProcessorCount()
         {
             // Getting a list of processor information
-            List<ProcessorInfo> oList = GetInternalRelations().ToList();
+            var oList = GetInternalRelations().ToList();
 
             // The list will basically contain something like this at this point:
             //
@@ -267,7 +267,7 @@ namespace Elekto.Diagnostics
             // http://msdn2.microsoft.com/en-us/library/ms686694(VS.85).aspx
 
             // First counting the number of RelationProcessorPackage lines
-            int iCount = oList.Count(oItem => oItem.Relationship == RelationProcessorCore.RelationProcessorPackage);
+            var iCount = oList.Count(oItem => oItem.Relationship == RelationProcessorCore.RelationProcessorPackage);
             if (iCount > 0)
             {
                 return iCount;
@@ -416,7 +416,7 @@ namespace Elekto.Diagnostics
         public static string GetProcessorId()
         {
             var mbs = new ManagementObjectSearcher("Select * From Win32_processor");
-            ManagementObjectCollection mbsList = mbs.Get();
+            var mbsList = mbs.Get();
             foreach (ManagementObject mo in mbsList)
             {
                 return

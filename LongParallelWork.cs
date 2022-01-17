@@ -48,7 +48,7 @@ namespace Elekto.Threading.Tasks
         public static WorkResult DoWork(this Action<int> workFunction, int totalWork, int parallelFactor = 0, double idealBatchTimeSeconds = 10.0, int initialBatchSize = 100, 
             Func<int, TimeSpan, bool> progressFunction = null, Action<string> messageFunction = null)
         {
-            int totalAvaiableCpus = Environment.ProcessorCount;
+            var totalAvaiableCpus = Environment.ProcessorCount;
             messageFunction(string.Format("Máquina tem {0} CPUs totais.", totalAvaiableCpus));
 
             int maxDegreeOfParallelism;
@@ -79,17 +79,17 @@ namespace Elekto.Threading.Tasks
                         maxDegreeOfParallelism));
                 }
             }
-            int totalUsedCpus = maxDegreeOfParallelism > 0 ? maxDegreeOfParallelism : totalAvaiableCpus;
+            var totalUsedCpus = maxDegreeOfParallelism > 0 ? maxDegreeOfParallelism : totalAvaiableCpus;
 
-            Stopwatch totalSw = Stopwatch.StartNew();
+            var totalSw = Stopwatch.StartNew();
             var sw = new Stopwatch();
-            int currentBatchSize = initialBatchSize;
-            int index = 0;
+            var currentBatchSize = initialBatchSize;
+            var index = 0;
             while (index < totalWork)
             {
                 currentBatchSize = Math.Max(totalUsedCpus, currentBatchSize);
-                int initial = index;
-                int final = Math.Min(initial + currentBatchSize, totalWork);
+                var initial = index;
+                var final = Math.Min(initial + currentBatchSize, totalWork);
                 
                 sw.Start();
                 Parallel.For(initial, final, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism },
@@ -113,10 +113,10 @@ namespace Elekto.Threading.Tasks
                     (Math.Abs(sw.Elapsed.TotalSeconds - idealBatchTimeSeconds) > (idealBatchTimeSeconds/10.0)))
                 {
                     // Tenta ajustar o tamanho do batch
-                    double factor = idealBatchTimeSeconds/sw.Elapsed.TotalSeconds;
+                    var factor = idealBatchTimeSeconds/sw.Elapsed.TotalSeconds;
                     factor = Math.Min(1000, factor);
                     factor = Math.Max(0.001, factor);
-                    int previousBatchSyze = currentBatchSize;
+                    var previousBatchSyze = currentBatchSize;
                     currentBatchSize = (int) (currentBatchSize*factor);
                     if (currentBatchSize > totalWork - index)
                     {
